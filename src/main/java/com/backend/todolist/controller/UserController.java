@@ -1,6 +1,7 @@
 package com.backend.todolist.controller;
 
 import com.backend.todolist.dto.request.UserRequest;
+import com.backend.todolist.dto.response.UserResponse;
 import com.backend.todolist.service.UserService;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -15,19 +16,18 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
-@RequestMapping (value = "/users")
+@RequestMapping (value = "/user")
 public class UserController {
 
-	// Attribute
 	private final UserService userService;
 
-	// Constructor
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
 
-	// Endpoints
 	@GetMapping (value = "/all")
 	public ResponseEntity<?> listAllUsers() {
 		return ResponseEntity.ok(userService.listAllUsers());
@@ -35,17 +35,13 @@ public class UserController {
 
 	@GetMapping (value = "/find/{id}")
 	public ResponseEntity<?> listUserById(@PathVariable Long id) {
-		return ResponseEntity.ok(userService.listUserById(id));
+		List<UserResponse> users = userService.listUserById(id);
+		return ResponseEntity.ok(users);
 	}
 
-	@PostMapping (value = "/signup")
-	public ResponseEntity<?> signUp(@Valid @RequestBody UserRequest addedUser) {
-		return ResponseEntity.ok(userService.signUp(addedUser));
-	}
-
-	@PostMapping (value = "/signin")
-	public ResponseEntity<?> signIn(@Valid @RequestBody UserRequest userRequest) {
-		return ResponseEntity.ok(userService.signIn(userRequest));
+	@PostMapping (value = "/create")
+	public ResponseEntity<?> createUser(@Valid @RequestBody UserRequest createUser) {
+		return ResponseEntity.ok(userService.createUser(createUser));
 	}
 
 	@PutMapping(value = "/update/{id}")

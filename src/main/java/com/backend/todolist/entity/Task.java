@@ -2,37 +2,37 @@ package com.backend.todolist.entity;
 
 import java.time.LocalDate;
 
+import com.backend.todolist.dto.request.TaskRequest;
 import jakarta.persistence.*;
-import jdk.jfr.DataAmount;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "tb_task")
+//compound constraint for titles to be allowed more than once in the db but only once for each user
+@Table(name = "tb_task", uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"title", "user_id"})
+})
 public class Task {
 
-	// Attributes
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	@Column (name = "title", length = 100, nullable = false)
+	private Long id;
+	@Column (nullable = false)
 	private String title;
-	@Column (name = "description")
 	private String description;
-	@Column (name = "isDone", nullable = false)
+	@Column (name = "is_done", nullable = false)
 	private boolean isDone;
 	@Column (name = "start_date")
-	private LocalDate startDate;
+	//default data
+	private LocalDate startDate = LocalDate.now();
 	@Column (name = "end_date")
 	private LocalDate endDate;
 
 	@ManyToOne
-	@JoinColumn(name="task_id")
-	private Task todos;
-
+	@JoinColumn(name="user_id")
+	private User user;
 
 	public Task(String title, String description, boolean isDone,
 		LocalDate startDate, LocalDate endDate) {
@@ -43,6 +43,12 @@ public class Task {
 		this.endDate = endDate;
 	}
 
-
+	public Task(TaskRequest taskRequest) {
+		this.title = taskRequest.getTitle();
+		this.description = taskRequest.getDescription();
+		this.isDone = taskRequest.isDone();
+		this.startDate = taskRequest.getStartDate();
+		this.endDate = taskRequest.getEndDate();
+	}
 
 }

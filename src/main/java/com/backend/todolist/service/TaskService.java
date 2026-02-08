@@ -3,86 +3,66 @@ package com.backend.todolist.service;
 import com.backend.todolist.dto.response.TaskResponse;
 import com.backend.todolist.entity.Task;
 import com.backend.todolist.dto.request.TaskRequest;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
+import java.util.Objects;
+import java.util.stream.Collectors;
 import com.backend.todolist.repository.TaskRepository;
+import com.backend.todolist.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TaskService {
 
-	// Attribute
 	private final TaskRepository taskRepository;
+	private final UserRepository userRepository;
 
-	// Constructor
-	public TaskService(TaskRepository taskRepository) {
+	public TaskService(UserRepository userRepository, TaskRepository taskRepository) {
+		this.userRepository = userRepository;
 		this.taskRepository = taskRepository;
 	}
 
-	// Get all tasks
-	public List<TaskResponse> listAllTasks() {
-		List<Task> tasksList = taskRepository.findAll();
-		List<TaskResponse> tasksResponseList = new ArrayList<>();
-
-		for (Task task : tasksList) {
-			tasksResponseList.add(new TaskResponse(task));
-		}
-
-		return tasksResponseList;
+	// Create a new task
+	public String createTask(Long userId, TaskRequest request) {
+		return userRepository.findById(userId).map(user -> {
+			Task task = new Task(request);
+			task.setUser(user);
+			taskRepository.save(task);
+			return "Task Successfully created";
+		}).orElse("User not found");
 	}
 
-	// Get task by id
-	public Optional<TaskResponse> listTaskById(Long id) {
-		Optional<Task> taskOptional = taskRepository.findById(id);
-		TaskResponse taskResponse = new TaskResponse();
-
-		if (taskOptional != null) {
-			Task task = taskOptional.get();
-			taskResponse = new TaskResponse(task);
-		}
-		return Optional.of(taskResponse);
-	}
-
-	// Add new task
-	public String addTask(TaskRequest addedTask) {
-		Task task = new Task(addedTask.getTitle(), addedTask.getDescription(),
-			addedTask.getIsDone(), addedTask.getStartDate(),
-			addedTask.getEndDate());
-		taskRepository.save(task);
-		return "Tarefa adicionada com sucesso!";
+	// Read all tasks of a single user
+	public List<TaskResponse> listAllTasksByUser(Long userId) {
+		return taskRepository.findByUserId(userId)
+				.stream().map(TaskResponse::new)
+				.collect(Collectors.toList());
 	}
 
 	// Update task
-	public String updateTask(Long id, TaskRequest updatedTask) {
-		Optional<Task> existingTask = taskRepository.findById(id);
-
-		if (existingTask.isPresent()) {
-			Task task = existingTask.get();
-			task.setTitle(updatedTask.getTitle());
-			task.setDescription(updatedTask.getDescription());
-			task.setIsDone(updatedTask.getIsDone());
-			task.setStartDate(updatedTask.getStartDate());
-			task.setEndDate(updatedTask.getEndDate());
-			taskRepository.save(task);
-
-			TaskResponse taskResponse = new TaskResponse(task);
-			return "Tarefa atualizada com sucesso!";
-		} else {
-			return "Tarefa não encontrada!";
-		}
+	public String updateTask(Long userId, Long taskId, TaskRequest updatedTask) {
+		return taskRepository.findById(taskId).map(task -> {
+			if(!Objects.equals(task.getUser().getId(), userId)) {
+				return "This user is not allowed to update this task";
+			}else{
+				task.setTitle(updatedTask.getTitle());
+				task.setDescription(updatedTask.getDescription());
+				task.setDone((updatedTask.isDone()));
+				taskRepository.save(task);
+				return "Task successfully updated";}
+		}).orElse("Task or user not found");
 	}
 
 	// Delete task
-	public String deleteTask(Long id) {
-		if (taskRepository.existsById(id)) {
-			taskRepository.deleteById(id);
-			return "Tarefa excluída com sucesso!";
-		} else {
-			return "Tarefa não encontrada!";
+	public String deleteByUser (Long userId, Long taskId) {
+	return taskRepository.findById(taskId).map( task -> {
+		if (!Objects.equals(task.getUser().getId(), (userId))){
+			return "User not allowed to delete this task";
+		}else{
+			taskRepository.delete(task);
+			return "Successfully deleted task";
 		}
+	}).orElse("Task or user not found");
 	}
-
 }
+
+

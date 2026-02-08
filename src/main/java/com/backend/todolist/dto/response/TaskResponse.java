@@ -1,21 +1,21 @@
 package com.backend.todolist.dto.response;
 
 import com.backend.todolist.entity.Task;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class TaskResponse {
 
-	// Attributes
 	private String title;
 	private String description;
 	private boolean isDone;
+	@DateTimeFormat(pattern = "dd/MM/YYYY")
 	private LocalDate startDate;
+	@DateTimeFormat(pattern = "dd/MM/YYYY")
 	private LocalDate endDate;
 
 	public TaskResponse(Task task) {
@@ -25,7 +25,6 @@ public class TaskResponse {
 		this.startDate = task.getStartDate();
 		this.endDate = task.getEndDate();
 	}
-
 
 
 }

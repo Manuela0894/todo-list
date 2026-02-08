@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponse {
 
-	// Attributes
-	private long id;
+	private Long id;
 	private String name;
 	private String email;
 
