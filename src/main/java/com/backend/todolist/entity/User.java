@@ -19,7 +19,6 @@ public class User {
 	private String name;
 	@Column (unique = true)
 	private String email;
-	private String password;
 
 	@OneToMany(mappedBy = "user")
 	private List<Task> tasks = new ArrayList<>();
@@ -27,13 +26,11 @@ public class User {
 	public User(String name, String email, String password) {
 		this.name = name;
 		this.email = email;
-		this.password = password;
 	}
 
 	public User(UserRequest userRequest ){
 		this.name = userRequest.getName();
 		this.email = userRequest.getEmail();
-		this.password = userRequest.getPassword();
 
 	}
 }

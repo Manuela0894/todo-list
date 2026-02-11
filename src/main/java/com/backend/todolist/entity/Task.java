@@ -3,6 +3,7 @@ package com.backend.todolist.entity;
 import java.time.LocalDate;
 
 import com.backend.todolist.dto.request.TaskRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,8 @@ public class Task {
 	@Column (name = "is_done", nullable = false)
 	private boolean isDone;
 	@Column (name = "start_date")
-	//default data
-	private LocalDate startDate = LocalDate.now();
+	//default date
+	private LocalDate startDate;
 	@Column (name = "end_date")
 	private LocalDate endDate;
 

@@ -13,9 +13,7 @@ public class TaskResponse {
 	private String title;
 	private String description;
 	private boolean isDone;
-	@DateTimeFormat(pattern = "dd/MM/YYYY")
 	private LocalDate startDate;
-	@DateTimeFormat(pattern = "dd/MM/YYYY")
 	private LocalDate endDate;
 
 	public TaskResponse(Task task) {

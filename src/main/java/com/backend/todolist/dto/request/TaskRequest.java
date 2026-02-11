@@ -11,14 +11,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class TaskRequest {
 
-	@NotBlank(message = "Informe o título da tarefa")
+	@NotBlank
 	private String title;
-	@NotBlank(message = "Informe a descrição da tarefa")
+	@NotBlank
 	private String description;
 	private boolean isDone;
-	@JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	private LocalDate startDate = LocalDate.now();
-	@JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	private LocalDate endDate;
 
 	public TaskRequest(Task task) {
